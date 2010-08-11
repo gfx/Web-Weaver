@@ -7,7 +7,9 @@ all_from 'lib/Web/Weaver.pm';
 #use_ppport 3.19;
 #cc_warnings;
 
-# requires ...
+requires 'LWP';
+requires 'WWW::Curl';
+requires 'HTTP::Response::Parser';
 
 test_requires 'Test::More' => 0.88; # done_testing()
 

@@ -9,49 +9,30 @@ our $VERSION = '0.0001';
 #use XSLoader;
 #XSLoader::load(__PACKAGE__, $VERSION);
 
-use LWP::UserAgent;
-use Data::Dump qw(dump);
-
 my $agent = sprintf '%s/%s', __PACKAGE__, $VERSION;
 
 sub to_psgi {
-    my($self, $request_rewriter) = @_;
+    my($class, $request_rewriter) = @_;
 
-    my $ua = LWP::UserAgent->new(agent => $agent);
+    my $self = $class->new(
+        agent => $agent,
+    );
 
     return sub {
         my($env) = @_;
-
         $request_rewriter->($env);
+        return $self->request($env);
+   };
+}
 
-        # re-construct the request URI
-        my $uri = sprintf '%s://%s:%s%s',
-            $env->{'psgi.url_scheme'},
-            $env->{REMOTE_ADDR},
-            $env->{SERVER_PORT},
-            $env->{REQUEST_URI},
-        ;
-        # convert PSGI request into HTTP::Request
-        my $request = HTTP::Request->new(
-            $env->{REQUEST_METHOD},
-            $uri,
-            # TODO: headers, content
-        );
-
-        my $response = $ua->request($request);
-
-        # convert HTTP::Response into PSGI response
-        my @headers;
-        $response->headers->scan(sub {
-            my($key, $val) = @_;
-            push @headers, $key => $val;
-        });
-        return [
-            $response->code,
-            \@headers,
-            [ $response->content ],
-        ];
-    };
+sub build_uri {
+    my($self, $env) = @_;
+    return sprintf '%s://%s:%s%s',
+        $env->{'psgi.url_scheme'},
+        $env->{REMOTE_ADDR},
+        $env->{SERVER_PORT},
+        $env->{REQUEST_URI},
+    ;
 }
 
 1;
