@@ -49,9 +49,9 @@ This document describes Web::Weaver version 0.0001.
 =head1 SYNOPSIS
 
     #!psgi
-    use Web::Weaver;
+    use Web::Weaver::Curl; # or ::LWP
 
-    my $app = Web::Weaver->to_psgi(sub {
+    my $app = Web::Weaver::Curl->to_psgi(sub {
         my($env) = @_;
         # rewrite $env
         $env->{REMOTE_ADDR} = MY_APP_REMOTE_ADDR();
