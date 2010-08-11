@@ -20,9 +20,12 @@ sub new {
     }
 
     my $curl = WWW::Curl::Easy->new();
-    $curl->setopt(CURLOPT_USERAGENT, $agent)   if defined $agent;
-    $curl->setopt(CURLOPT_TIMEOUT,   $timeout) if defined $timeout;
     $curl->setopt(CURLOPT_HEADER, 0);
+
+    $curl->setopt(CURLOPT_USERAGENT,
+        $agent || $class->default_user_agent);
+
+    $curl->setopt(CURLOPT_TIMEOUT,   $timeout) if defined $timeout;
 
     return bless { curl => $curl }, $class;
 }

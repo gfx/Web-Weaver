@@ -4,6 +4,12 @@ use warnings;
 
 use parent qw(Web::Weaver LWP::UserAgent);
 
+sub new {
+    my($self, %args) = @_;
+    $args{agent} ||= $self->default_user_agent;
+    return $self->SUPER::new(%args);
+}
+
 sub request {
     my($self, $env) = @_;
 

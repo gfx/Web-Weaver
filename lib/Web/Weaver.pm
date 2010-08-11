@@ -9,14 +9,14 @@ our $VERSION = '0.0001';
 #use XSLoader;
 #XSLoader::load(__PACKAGE__, $VERSION);
 
-my $agent = sprintf '%s/%s', __PACKAGE__, $VERSION;
+sub default_user_agent {
+    return sprintf '%s/%s', __PACKAGE__, $VERSION;
+}
 
-sub to_psgi {
+sub to_app{
     my($class, $request_rewriter) = @_;
 
-    my $self = $class->new(
-        agent => $agent,
-    );
+    my $self = ref($class) ? $class : $class->new();
 
     return sub {
         my($env) = @_;
@@ -51,7 +51,7 @@ This document describes Web::Weaver version 0.0001.
     #!psgi
     use Web::Weaver::Curl; # or ::LWP
 
-    my $app = Web::Weaver::Curl->to_psgi(sub {
+    my $app = Web::Weaver::Curl->to_app(sub {
         my($env) = @_;
         # rewrite $env
         $env->{REMOTE_ADDR} = MY_APP_REMOTE_ADDR();
