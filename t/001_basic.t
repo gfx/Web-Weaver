@@ -7,6 +7,7 @@ use Web::Weaver;
 use HTTP::Server::PSGI;
 use Plack::Test;
 use Test::TCP;
+use Data::Dumper;
 
 test_tcp
 client => sub {
@@ -28,15 +29,15 @@ client => sub {
         ok $res->is_success;
         is $res->content_type, 'application/x-perl';
 
-        my $env = eval 'no strict "refs"; +' . $res->content;
-
+        my $env = eval 'no strict qw(vars refs); ' . $res->content;
+        diag $@ if $@;
         is $env->{SERVER_PORT}, $port;
         is $env->{REQUEST_URI}, "/hello?xxx";
     },
     ;
 },
 
-# target server
+# target server, which simply returns the request env
 server => sub {
     my($port) = @_;
 
@@ -50,7 +51,7 @@ server => sub {
         return [
             200,
             [ 'Content-Type' => 'application/x-perl' ],
-            [ explain($env) ], # return the request as is
+            [ Dumper($env) ], # return the request as is
         ];
     });
 };

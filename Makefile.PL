@@ -4,8 +4,8 @@ use inc::Module::Install;
 
 all_from 'lib/Web/Weaver.pm';
 
-use_ppport 3.19;
-cc_warnings;
+#use_ppport 3.19;
+#cc_warnings;
 
 # requires ...
 

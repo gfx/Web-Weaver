@@ -6,8 +6,8 @@ use warnings;
 
 our $VERSION = '0.0001';
 
-use XSLoader;
-XSLoader::load(__PACKAGE__, $VERSION);
+#use XSLoader;
+#XSLoader::load(__PACKAGE__, $VERSION);
 
 use LWP::UserAgent;
 use Data::Dump qw(dump);
