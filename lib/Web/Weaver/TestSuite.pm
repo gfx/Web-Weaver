@@ -50,6 +50,13 @@ sub test_web_weaver {
             diag "Eval error: " . $@ if $@;
             is $env->{SERVER_PORT}, $port;
             is $env->{REQUEST_URI}, "/hello?xxx";
+
+            $req = HTTP::Request->new(GET => "http://localhost/hello?not_found=1");
+            $res = $cb->($req);
+
+            ok !$res->is_success;
+            is $res->content_type, 'text/plain';
+            is $res->content, 'not_found';
         },
     );
 }
@@ -70,7 +77,7 @@ sub _psgi_echo_server {
         if($req->param('not_found')) {
             return [
                 404,
-                ['Content-Type' => 'text/html'],
+                ['Content-Type' => 'text/plain'],
                 ['not_found'],
             ];
         }
