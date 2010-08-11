@@ -14,14 +14,12 @@ sub default_user_agent {
 }
 
 sub to_app{
-    my($class, $request_rewriter) = @_;
+    my($class) = @_;
 
     my $self = ref($class) ? $class : $class->new();
 
     return sub {
-        my($env) = @_;
-        $request_rewriter->($env);
-        return $self->request($env);
+        return $self->request(@_);
    };
 }
 
@@ -40,7 +38,7 @@ __END__
 
 =head1 NAME
 
-Web::Weaver - PSGI proxy server
+Web::Weaver - Library for PSGI requests
 
 =head1 VERSION
 
@@ -51,15 +49,15 @@ This document describes Web::Weaver version 0.0001.
     #!psgi
     use Web::Weaver::Curl; # or ::LWP
 
-    my $app = Web::Weaver::Curl->to_app(sub {
+    my $app = Web::Weaver::Curl->new->to_app();
+    
+    return sub { # as a proxy server
         my($env) = @_;
         # rewrite $env
         $env->{REMOTE_ADDR} = MY_APP_REMOTE_ADDR();
         $env->{SERVER_PORT} = MY_APP_SERVER_PORT();
-        retur $env;
-    });
-
-    return $app; # as a PSGI application
+        retur $app->($env);
+    };
 
 =head1 DESCRIPTION
 

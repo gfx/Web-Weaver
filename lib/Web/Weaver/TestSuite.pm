@@ -29,12 +29,16 @@ sub test_suite {
 
 sub test_web_weaver {
     my($port, $module) = @_;
+
+    my $app = $module->new(timeout => 1)->to_app();
+
     test_psgi(
         # proxy server
-        app => $module->new(timeout => 1)->to_app(sub {
+        app => sub {
             my($env) = @_;
             $env->{SERVER_PORT} = $port;
-        }),
+            return $app->($env);
+        },
 
         # client 
         client => sub {
